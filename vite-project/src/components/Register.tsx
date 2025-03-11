@@ -88,7 +88,7 @@ function App() {
               ]}
             >
               <Input
-                prefix={<MailOutlined className="text-orange-400" />}
+                prefix={<MailOutlined className="text-black" />}
                 placeholder="E-mail"
                 size="large"
                 className="rounded-md"
@@ -109,7 +109,7 @@ function App() {
               ]}
             >
               <Input
-                prefix={<UserOutlined className="text-orange-400" />}
+                prefix={<UserOutlined className="text-black" />}
                 placeholder="Username"
                 size="large"
                 className="rounded-md"
@@ -125,7 +125,7 @@ function App() {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-orange-400" />}
+                prefix={<LockOutlined className="text-black" />}
                 placeholder="Password"
                 size="large"
                 className="rounded-md"
@@ -149,7 +149,7 @@ function App() {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-orange-400" />}
+                prefix={<LockOutlined className="text-black" />}
                 placeholder="Confirm Password"
                 size="large"
                 className="rounded-md"
@@ -162,7 +162,7 @@ function App() {
                 htmlType="submit"
                 size="large"
                 loading={loading}
-                className="w-full bg-orange-500 hover:bg-gray-800 focus:bg-gray-800"
+                className="w-full bg-black hover:bg-gray-800 focus:bg-gray-800"
               >
                 Get OTP
               </Button>

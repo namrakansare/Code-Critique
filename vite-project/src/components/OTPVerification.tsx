@@ -120,7 +120,7 @@ function OTPVerification() {
               type="primary"
               onClick={handleVerify}
               loading={loading}
-              className="w-full bg-orange-500 hover:bg-orange-800 focus:bg-orange-800 h-12 text-lg"
+              className="w-full bg-black hover:bg-orange-800 focus:bg-orange-800 h-12 text-lg"
             >
               Verify
             </Button>
