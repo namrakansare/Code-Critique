@@ -1,12 +1,16 @@
 import React, { useState, useRef, KeyboardEvent } from 'react';
 import { Typography, Button, message } from 'antd';
 import otpBg from "../assets/otp-background.jpg";
+import axios from 'axios';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 const { Title } = Typography;
 
 function OTPVerification() {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
+  const navigate=useNavigate();
+  const location = useLocation();
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -48,23 +52,35 @@ function OTPVerification() {
   };
 
   const handleVerify = async () => {
-    if (otp.some(digit => !digit)) {
-      message.error('Please enter all digits of the OTP');
+    const token = location.state?.token || "";
+    const enteredOtp = otp.join(""); // Combine OTP digits into a single string
+    
+    if (enteredOtp.length !== 4) {
+      message.error("Please enter all digits of the OTP");
       return;
     }
-
+    
     setLoading(true);
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      message.success('OTP verified successfully!');
-      // Here you would typically make your API call to verify the OTP
+      console.log(token,enteredOtp);
+      
+      const response = await axios.post("http://localhost:5000/api/verify-otp", {"otp": enteredOtp,"token":token},{headers: { "Content-Type": "application/json" }});
+  
+      if (response.data.success) {
+      console.log("kjewfj");
+        message.success(response.data.message);
+        navigate("/login");
+      } else {
+        message.error(response.data.message);
+      }
     } catch (error) {
-      message.error('Failed to verify OTP. Please try again.');
+      message.error("Failed to verify OTP. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleResend = async () => {
     try {

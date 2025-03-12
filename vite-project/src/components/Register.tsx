@@ -3,10 +3,12 @@ import { Form, Input, Button, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import logo from "../assets/logo.jpg";
 const { Title } = Typography;
-
-function App() {
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+function Register() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const validatePassword = (_: any, value: string) => {
     if (!value) {
@@ -30,20 +32,40 @@ function App() {
     return Promise.resolve();
   };
 
+
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Form values:', values);
-      message.success('OTP has been sent to your email!');
-      // You would typically make your API call here
-    } catch (error) {
-      message.error('Failed to send OTP. Please try again.');
+  
+      const response = await axios.post("http://localhost:5000/api/register", values, {
+        headers: { "Content-Type": "application/json" },
+      });
+  
+  
+      if (response.status === 200) {
+        message.success(response.data.message);
+        const token = response.data.token;
+        navigate(`/otp-verification`,{ state: { token } });
+
+      } else {
+        message.error(response.data.error);
+      }
+    } catch (error: any) {
+      console.error("Error:", error);
+  
+      if (error.response) {
+        message.error(error.response.data.error || "Something went wrong!");
+      } else if (error.request) {
+        message.error("No response from server. Check Flask backend.");
+      } else {
+        message.error("Request failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   return (
     <div className="flex min-h-screen">
@@ -174,4 +196,4 @@ function App() {
   );
 }
 
-export default App;
+export default Register;

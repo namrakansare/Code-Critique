@@ -1,4 +1,11 @@
 flask
-flask_cors
+flask-cors
 numpy
 pandas
+flask-sqlalchemy
+psycopg2-binary
+bcrypt
+flask-mail
+pyjwt
+flask-migrate
+dotenv
