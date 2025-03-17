@@ -40,8 +40,8 @@ function Register() {
       const response = await axios.post("http://localhost:5000/api/register", values, {
         headers: { "Content-Type": "application/json" },
       });
-  
-  
+      console.log(response);
+      
       if (response.status === 200) {
         message.success(response.data.message);
         const token = response.data.token;

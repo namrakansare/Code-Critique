@@ -70,7 +70,7 @@ function OTPVerification() {
       if (response.data.success) {
       console.log("kjewfj");
         message.success(response.data.message);
-        navigate("/login");
+        navigate("/chat");
       } else {
         message.error(response.data.message);
       }

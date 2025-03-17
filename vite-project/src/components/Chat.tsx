@@ -4,19 +4,12 @@ import { User, Share, Search } from 'lucide-react';
 
 function Chat() {
   const [message, setMessage] = useState('');
-  const [chats] = useState([
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'dbmgmwgmwm yw6 tnzlr',
-    'yw6tn6t 4',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw',
-    'flowflowmgmm fgmwgmw'
-  ]);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove token from storage
+    window.location.href = '/login'; // Redirect to login page
+  };
 
   return (
     <div className="flex h-screen bg-[#1E1E1E]">
@@ -25,7 +18,13 @@ function Chat() {
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2">Previous Chats</h2>
           <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-8rem)]">
-            {chats.map((chat, index) => (
+            {[
+              'flowflowmgmm fgmwgmw',
+              'flowflowmgmm fgmwgmw',
+              'dbmgmwgmwm yw6 tnzlr',
+              'yw6tn6t 4',
+              'flowflowmgmm fgmwgmw'
+            ].map((chat, index) => (
               <div
                 key={index}
                 className="text-sm text-gray-300 truncate hover:bg-[#3C3C3C] p-2 rounded cursor-pointer"
@@ -40,12 +39,29 @@ function Chat() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-[#2C2C2C] p-4 flex justify-between items-center">
+        <div className="bg-[#2C2C2C] p-4 flex justify-between items-center relative">
           <div className="flex items-center gap-2">
             <Search className="w-5 h-5 text-gray-400" />
             <Share className="w-5 h-5 text-gray-400" />
           </div>
-          <User className="w-6 h-6 text-gray-400" />
+
+          {/* Profile Icon */}
+          <div className="relative">
+            <User
+              className="w-6 h-6 text-gray-400 cursor-pointer"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            />
+
+            {/* Profile Menu */}
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-40 bg-[#3C3C3C] rounded-lg shadow-lg text-white py-2">
+                <button className="w-full text-left px-4 py-2 hover:bg-[#4C4C4C]">Edit Profile</button>
+                <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-[#4C4C4C]">
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Chat Area */}

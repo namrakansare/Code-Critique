@@ -149,6 +149,48 @@ def register():
         db.session.commit()
         return jsonify({"success": False, "message": "Failed to send OTP. Please try again."}), 500
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username_or_email = data.get('email')
+    password = data.get('password')
+
+    # Check if user exists by email or username
+    user = User.query.filter((User.email == username_or_email) | (User.username == username_or_email)).first()
+
+    if not user:
+        return jsonify({"success": False, "message": "Invalid username or email"}), 401
+
+    # Verify user password
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({"success": False, "message": "Incorrect password"}), 401
+
+    # Check if user is verified
+    if not user.is_verified:
+        return jsonify({"success": False, "message": "Please verify your email before logging in"}), 403
+
+    # Generate JWT Token
+    token = jwt.encode(
+        {
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        },
+        app.config['SECRET_KEY'],
+        algorithm="HS256"
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Login successful!",
+        "token": token
+    }), 200
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200
+
 @app.route('/api/verify-otp', methods=['POST'])
 def verify_otp():
     data = request.get_json()
