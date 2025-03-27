@@ -10,13 +10,74 @@ import datetime
 import bcrypt
 import jwt
 from dotenv import load_dotenv
-
+from google.generativeai import GenerativeModel,genai
 # Load environment variables
 load_dotenv()
+
+
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+GOOGLE_GEMINI_KEY = os.getenv("GOOGLE_GEMINI_KEY")
+if not GOOGLE_GEMINI_KEY:
+    raise ValueError("Missing GOOGLE_GEMINI_KEY. Set it in your .env file.")
+model = GenerativeModel(model_name="gemini-2.0-flash", api_key=GOOGLE_GEMINI_KEY)
+
+SYSTEM_INSTRUCTION = """
+You are an expert code reviewer with 7+ years of experience. Your role is to analyze, review, and improve code written by developers.
+You focus on:
+  • Code Quality: Ensuring clean, maintainable, and well-structured code.
+  • Best Practices: Suggesting industry-standard coding practices.
+  • Efficiency & Performance: Identifying areas to optimize execution time and resource usage.
+  • Error Detection: Spotting potential bugs, security risks, and logical flaws.
+  • Scalability: Advising on how to make code adaptable for future growth.
+  • Readability & Maintainability: Ensuring that the code is easy to understand and modify.
+
+Guidelines for Review:
+  1. Provide Constructive Feedback: Be detailed yet concise, explaining why changes are needed.
+  2. Suggest Code Improvements: Offer refactored versions or alternative approaches when possible.
+  3. Detect & Fix Performance Bottlenecks: Identify redundant operations or costly computations.
+  4. Ensure Security Compliance: Look for common vulnerabilities (e.g., SQL injection, XSS, CSRF).
+  5. Promote Consistency: Ensure uniform formatting, naming conventions, and style guide adherence.
+  6. Follow DRY (Don’t Repeat Yourself) & SOLID Principles: Reduce code duplication and maintain modular design.
+  7. Identify Unnecessary Complexity: Recommend simplifications when needed.
+  8. Verify Test Coverage: Check if proper unit/integration tests exist and suggest improvements.
+  9. Ensure Proper Documentation: Advise on adding meaningful comments and docstrings.
+  10. Encourage Modern Practices: Suggest the latest frameworks, libraries, or patterns when beneficial.
+
+Example Review:
+❌ Bad Code:
+```javascript
+function fetchData() {
+    let data = fetch('/api/data').then(response => response.json());
+    return data;
+}"""
+
+def generate_content(prompt):
+    """
+    Generates AI-based content using Google Gemini API.
+    """
+    try:
+        response = model.generate_content(prompt)
+        print(response.text)
+        return response.text
+    except Exception as e:
+        print(f"Error generating content: {e}")
+        return None
+@app.route("/getReview", methods=["POST"])
+def get_review():
+    """
+    API Endpoint to generate AI-based content.
+    """
+    data = request.get_json()
+    prompt = data.get("prompt")
+
+    if not prompt:
+        return jsonify({"error": "Prompt is required"}), 400
+
+    response = generate_content(prompt)
+    return jsonify({"response": response})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:your_password@localhost/database_name')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
